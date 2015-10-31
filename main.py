@@ -10,13 +10,13 @@ from peewee import OperationalError
 from peewee import DoesNotExist
 import pypandoc
 from prawoauth2 import PrawOAuth2Mini
-
+# instantiate goodreads and reddit clients
 from goodreadsapi import get_book_details_by_id, get_goodreads_ids
 from settings import (app_key, app_secret, access_token, refresh_token,
                       user_agent, scopes, supported_subreddits,
                       be_gentle_to_reddit)
 
-# instantiate goodreads and reddit clients
+
 
 reddit_client = praw.Reddit(user_agent=user_agent)
 oauth_helper = PrawOAuth2Mini(reddit_client, app_key=app_key,
@@ -92,12 +92,12 @@ def log_this_comment(comment, TableName=RepliedComments):
 def get_a_random_message():
     return random.choice(welcome_messages)
 
-
+#checks and receives if any new comments are posted
 def get_latest_comments(subreddit):
     subreddit = reddit_client.get_subreddit(subreddit)
     return subreddit.get_comments()
 
-
+#Bot's reply to the comment along with the details
 def prepare_the_message(spool):
     message_template = u"**Name**: {0}\n\n**Author**: {1}\n\n**Avg Rating**: {2} by {3} users\n\n**Description**: {4}"
     message = ""
@@ -111,7 +111,7 @@ def prepare_the_message(spool):
     message += 'Bleep, Blop, Bleep! I am still in beta, please be ~~genital~~ ~~gental~~ fuck, be nice.'
     return message
 
-
+#converts html file received from goodreads to MarkDown that is readable by reddit
 def html_to_md(string):
     # remove the <br> tags before conversion
     if not string:
@@ -124,7 +124,7 @@ def take_a_nap():
     if be_gentle_to_reddit:
         time.sleep(30)
 
-
+#checks if there is any link with goodreads.com in the subreddit of india
 def goodreads_bot_serve_people(subreddit='india'):
     global last_checked_comment
     for comment in get_latest_comments(subreddit):
@@ -143,7 +143,7 @@ def goodreads_bot_serve_people(subreddit='india'):
         comment.reply(message)
         log_this_comment(comment)
 
-
+#if OP replies thanks, posts a reply from the list of thank you messages
 def reply_to_self_comments():
     for comment in reddit_client.get_comment_replies():
         if is_already_thanked(comment_id=comment.id) or not comment.new:
