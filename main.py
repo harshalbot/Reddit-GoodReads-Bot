@@ -65,7 +65,7 @@ def deinit():
 
 
 def is_already_replied(comment_id):
-# function to check if the comment has already been replied to 
+""" Function to check if the comment has already been replied to. """
     if comment_id in replied_comments:
         return True
     try:
@@ -94,13 +94,13 @@ def get_a_random_message():
 
 
 def get_latest_comments(subreddit):
-# checks and receives if any new comments are posted
+""" Checks and receives if any new comments are posted. """
     subreddit = reddit_client.get_subreddit(subreddit)
     return subreddit.get_comments()
 
 
 def prepare_the_message(spool):
-# Bot's reply to the comment along with details of the linked book
+""" Bot's reply to the comment along with details of the linked book.   """
     message_template = u"**Name**: {0}\n\n**Author**: {1}\n\n**Avg Rating**: {2} by {3} users\n\n**Description**: {4}"
     message = ""
     for book in spool:
@@ -115,7 +115,7 @@ def prepare_the_message(spool):
 
 
 def html_to_md(string):
-# converts html file received from goodreads to a MarkDown file which is readable by reddit
+""" Converts html file received from goodreads to a MarkDown file which is readable by reddit. """
     # remove the <br> tags before conversion
     if not string:
         return
@@ -129,7 +129,7 @@ def take_a_nap():
 
 
 def goodreads_bot_serve_people(subreddit='india'):
-# checks the subreddit if any of the comment link to goodreads.com
+""" Checks the subreddit if any of the comment link to goodreads.com. """
     global last_checked_comment
     for comment in get_latest_comments(subreddit):
         if comment.id in last_checked_comment:
@@ -149,7 +149,7 @@ def goodreads_bot_serve_people(subreddit='india'):
 
 
 def reply_to_self_comments():
-# if thanks as a comment reply, function replies from the list of thank you messages
+""" If thanks received as a comment reply, function replies from the list of thank you messages. """
     for comment in reddit_client.get_comment_replies():
         if is_already_thanked(comment_id=comment.id) or not comment.new:
             break
