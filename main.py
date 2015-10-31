@@ -10,12 +10,11 @@ from peewee import OperationalError
 from peewee import DoesNotExist
 import pypandoc
 from prawoauth2 import PrawOAuth2Mini
-# instantiate goodreads and reddit clients
+
 from goodreadsapi import get_book_details_by_id, get_goodreads_ids
 from settings import (app_key, app_secret, access_token, refresh_token,
                       user_agent, scopes, supported_subreddits,
                       be_gentle_to_reddit)
-
 
 
 reddit_client = praw.Reddit(user_agent=user_agent)
@@ -66,6 +65,7 @@ def deinit():
 
 
 def is_already_replied(comment_id):
+# function to check if the comment has already been replied to 
     if comment_id in replied_comments:
         return True
     try:
@@ -92,13 +92,15 @@ def log_this_comment(comment, TableName=RepliedComments):
 def get_a_random_message():
     return random.choice(welcome_messages)
 
-#checks and receives if any new comments are posted
+
 def get_latest_comments(subreddit):
+# checks and receives if any new comments are posted
     subreddit = reddit_client.get_subreddit(subreddit)
     return subreddit.get_comments()
 
-#Bot's reply to the comment along with the details
+
 def prepare_the_message(spool):
+# Bot's reply to the comment along with details of the linked book
     message_template = u"**Name**: {0}\n\n**Author**: {1}\n\n**Avg Rating**: {2} by {3} users\n\n**Description**: {4}"
     message = ""
     for book in spool:
@@ -111,8 +113,9 @@ def prepare_the_message(spool):
     message += 'Bleep, Blop, Bleep! I am still in beta, please be ~~genital~~ ~~gental~~ fuck, be nice.'
     return message
 
-#converts html file received from goodreads to MarkDown that is readable by reddit
+
 def html_to_md(string):
+# converts html file received from goodreads to a MarkDown file which is readable by reddit
     # remove the <br> tags before conversion
     if not string:
         return
@@ -124,8 +127,9 @@ def take_a_nap():
     if be_gentle_to_reddit:
         time.sleep(30)
 
-#checks if there is any link with goodreads.com in the subreddit of india
+
 def goodreads_bot_serve_people(subreddit='india'):
+# checks the subreddit if any of the comment link to goodreads.com
     global last_checked_comment
     for comment in get_latest_comments(subreddit):
         if comment.id in last_checked_comment:
@@ -143,8 +147,9 @@ def goodreads_bot_serve_people(subreddit='india'):
         comment.reply(message)
         log_this_comment(comment)
 
-#if OP replies thanks, posts a reply from the list of thank you messages
+
 def reply_to_self_comments():
+# if thanks as a comment reply, function replies from the list of thank you messages
     for comment in reddit_client.get_comment_replies():
         if is_already_thanked(comment_id=comment.id) or not comment.new:
             break
